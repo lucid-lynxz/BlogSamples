@@ -6,6 +6,7 @@ import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -58,7 +59,6 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
         int flag = value > 0 ? -1 : 1;
         currentVolume += flag * 0.1 * maxVolume;
         // 对currentVolume进行限制
-
         mAudioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentVolume, 0);
     }
 
@@ -238,6 +238,7 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mVv.stopPlayback();
         Window mWindow = getWindow();
         WindowManager.LayoutParams mParams = mWindow.getAttributes();
         mParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
@@ -255,5 +256,12 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
 
     private void showToast(String msg) {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+    }
+
+    private boolean ifSdCardAccessable() {
+        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
+            return true;
+        }
+        return false;
     }
 }
