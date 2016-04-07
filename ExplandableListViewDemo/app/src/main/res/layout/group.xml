@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" 
+    android:background="#B8E6FA"
+    android:gravity="center_vertical">
+    <ImageView 
+        android:id="@+id/groupIcon"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:contentDescription="@null"
+        android:layout_marginLeft="10dp"
+        android:src="@drawable/btn_browser"/>
+    <TextView
+        android:id="@+id/groupto"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:textColor="#000000"
+        android:textSize="18sp" 
+        android:gravity="center_vertical|left"/>
+</LinearLayout>

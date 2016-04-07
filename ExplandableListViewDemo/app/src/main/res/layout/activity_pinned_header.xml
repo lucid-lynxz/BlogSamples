@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#F0F0F0"
+              android:orientation="vertical">
+
+    <org.lynxz.explandablelistviewdemo.widget.PinnedHeaderExpandableListView
+        android:id="@+id/explistview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="0.0dip"
+        android:cacheColorHint="#00000000"
+        android:choiceMode="singleChoice"
+        android:drawSelectorOnTop="false"
+        android:fastScrollEnabled="false"
+        android:footerDividersEnabled="true"
+        android:groupIndicator="@null"
+        android:scrollbars="vertical"
+        android:scrollingCache="true"/>
+
+</LinearLayout>
