@@ -2,6 +2,7 @@ package org.lynxz.explandablelistviewdemo;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
@@ -20,7 +21,7 @@ public class BasicExpandableListView extends Activity {
     private List<FriendGroupBean> mGroupArr;
     private List<List<FriendBean>> mChildArr;
     private BasicExpandableListViewAdapter mAdapter;
-
+    private static final String TAG = BasicExpandableListView.class.getName();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +88,11 @@ public class BasicExpandableListView extends Activity {
                                                 expandGroupIndex = groupPosition;
                                             }
                                             mAdapter.setExpandGroupIndex(expandGroupIndex);
+
+                                            long packedPositionForGroup = mEl.getPackedPositionForGroup(groupPosition);
+//                                            int packedPositionGroup = mEl.getPackedPositionGroup(packedPositionForGroup);
+                                            int flatListPosition = mEl.getFlatListPosition(packedPositionForGroup);
+                                            Log.d(TAG, "Group- " + flatListPosition + " - " + packedPositionForGroup);
                                             return true;
                                         }
                                     }
@@ -97,6 +103,12 @@ public class BasicExpandableListView extends Activity {
                                         @Override
                                         public boolean onChildClick(ExpandableListView parent, View v, int groupPosition,
                                                                     int childPosition, long id) {
+
+                                            long packedPositionForChild = mEl.getPackedPositionForChild(groupPosition, childPosition);
+//                                            int packedPositionChild = mEl.getPackedPositionChild(packedPositionForChild);
+                                            int flatListPosition = mEl.getFlatListPosition(packedPositionForChild);
+                                            Log.d(TAG, "Child- " + flatListPosition + " - " + packedPositionForChild);
+
                                             Toast.makeText(BasicExpandableListView.this, "group=" + groupPosition + "-child=" + childPosition, Toast.LENGTH_SHORT).show();
                                             return false;
                                         }

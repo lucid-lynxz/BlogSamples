@@ -27,5 +27,13 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, PinnedHeaderActivity.class));
             }
         });
+
+        findViewById(R.id.btn2).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //https://github.com/idunnololz/AnimatedExpandableListView
+                startActivity(new Intent(MainActivity.this, AnimatedActivity.class));
+            }
+        });
     }
 }

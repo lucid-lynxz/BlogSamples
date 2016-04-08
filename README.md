@@ -8,4 +8,6 @@
 包含特性: 获取帧视图作为封面,触摸滑动改变音量/亮度,全屏播放等
 
 ### ExplandableListViewDemo
-基本使用,点击事件,懒加载图片以及将展开的group标题栏固定在顶部
+1. 基本使用,点击事件,懒加载图片等;
+2. 将展开的group标题栏位置浮动在顶部,取自 [这篇博客](http://blog.csdn.net/h7870181/article/details/40400155);
+3. [展开/收缩动画](https://github.com/idunnololz/AnimatedExpandableListView);
