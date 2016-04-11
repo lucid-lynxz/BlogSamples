@@ -153,9 +153,9 @@ public class MainActivity extends AppCompatActivity {
         //指定页面默认编码,不过即使这么设置了,loadData()仍有可能出现中文乱码的请款
         wvSettings.setDefaultTextEncodingName("utf-8");
 
-        //强制手机使用 desktop-size viewport
-        wvSettings.setUseWideViewPort(true);
-        wvSettings.setLoadWithOverviewMode(true);
+        //强制手机使用 desktop-size viewport 以自适应手机分辨率
+        //        wvSettings.setUseWideViewPort(true);
+        //        wvSettings.setLoadWithOverviewMode(true);
 
         mWv.addJavascriptInterface(new BasicJsAppInterface(this), "AndroidApp");
 
