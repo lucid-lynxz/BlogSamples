@@ -1,7 +1,9 @@
 package org.lynxz.webviewdemo;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
+import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,7 +11,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -23,23 +24,41 @@ public class MainActivity extends AppCompatActivity {
 
     private WebView mWv;
     private static final String mUrl = "http://www.jianshu.com/users/302253a7ed00/latest_articles";
+    private static final String TAG = "webView";
     private WebChromeClient.CustomViewCallback myCallback;
     private View myView;
+    private ProgressDialog mProgressDlg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        requestWindowFeature(Window.FEATURE_PROGRESS);
+        //        requestWindowFeature(Window.FEATURE_PROGRESS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        // Makes Progress bar Visible
+        //        getWindow().setFeatureInt(Window.FEATURE_PROGRESS, Window.PROGRESS_VISIBILITY_ON);
+
+        // 用于显示加载进度
+        mProgressDlg = new ProgressDialog(this);
+        mProgressDlg.setMessage("loading...");
+        mProgressDlg.setCancelable(true);
+        mProgressDlg.setCanceledOnTouchOutside(true);
 
         mWv = (WebView) findViewById(R.id.wv);
 
         mWv.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                super.onProgressChanged(view, newProgress);
+                // super.onProgressChanged(view, newProgress);
+                Log.i(TAG, "onProgressChanged " + newProgress);
                 MainActivity.this.setProgress(newProgress);
+                if (newProgress <= 90) {
+                    mProgressDlg.setProgress(newProgress);
+                } else {
+                    mProgressDlg.dismiss();
+                }
+
             }
+
 
             @Override
             public void onReceivedTitle(WebView view, String title) {
@@ -48,8 +67,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mWv.setWebViewClient(new WebViewClient() {
 
+        mWv.setWebViewClient(new WebViewClient() {
             /**
              * returns
              *      false : tells the platform not to override the URL, but to load it in the WebView.
@@ -79,8 +98,29 @@ public class MainActivity extends AppCompatActivity {
             public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
                 super.onReceivedError(view, request, error);
                 // 加载某些网站的时候会报:ERR_CONNECTION_REFUSED
-                Log.i("xxx", "error ..... " + error.toString() + " \n " + error.toString());
+                Log.i(TAG, "error ..... " + error.toString() + " \n " + error.toString());
                 Toast.makeText(MainActivity.this, "error", Toast.LENGTH_SHORT).show();
+                if (mProgressDlg.isShowing()) {
+                    mProgressDlg.dismiss();
+                }
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
+                Log.i(TAG, "onPageStarted");
+                if (!mProgressDlg.isShowing()) {
+                    mProgressDlg.show();
+                }
+            }
+
+            @Override
+            public void onPageFinished(WebView view, String url) {
+                super.onPageFinished(view, url);
+                Log.i(TAG, "onPageFinished");
+                if (mProgressDlg.isShowing()) {
+                    mProgressDlg.dismiss();
+                }
             }
 
             @Override
@@ -184,12 +224,13 @@ public class MainActivity extends AppCompatActivity {
         //                "</body>\n" +
         //                "</html>";
         //
-        //        // 官网例子给的下面的写法,但是会出现中文乱码,这里有解释:
+        //        // 官网例子给的下面的写法,但是会出现中文乱码,
+        //        // 原因:http://blog.csdn.net/top_code/article/details/9163597
         //        // mWv.loadData(summary, "text/html", "utf-8");
         //
         //        mWv.loadData(summary, "text/html;charset=UTF-8", null);
 
-        // 3. 加载线上资源
+        //        // 3. 加载线上资源
         //        mWv.loadUrl(mUrl);
     }
 }
