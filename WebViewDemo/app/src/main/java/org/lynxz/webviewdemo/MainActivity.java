@@ -8,9 +8,11 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
@@ -26,7 +28,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String mUrl = "http://www.jianshu.com/users/302253a7ed00/latest_articles";
     private static final String TAG = "webView";
     private WebChromeClient.CustomViewCallback myCallback;
-    private View myView;
     private ProgressDialog mProgressDlg;
 
     @Override
@@ -49,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 // super.onProgressChanged(view, newProgress);
-                Log.i(TAG, "onProgressChanged " + newProgress);
                 MainActivity.this.setProgress(newProgress);
                 if (newProgress <= 90) {
                     mProgressDlg.setProgress(newProgress);
@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                Log.i(TAG, "onPageStarted");
                 if (!mProgressDlg.isShowing()) {
                     mProgressDlg.show();
                 }
@@ -117,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                Log.i(TAG, "onPageFinished");
                 if (mProgressDlg.isShowing()) {
                     mProgressDlg.dismiss();
                 }
@@ -142,20 +140,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        initSettings();
 
-        // webView设置
-        WebSettings wvSettings = mWv.getSettings();
-        //启用js代码支持
-        wvSettings.setJavaScriptEnabled(true);
-        //使用内置的缩放控制功能按钮,有些网页可能会禁用掉,所以不一定看的到效果
-        //另外,官网建议启用缩放控制的时候,webView的宽/高不要设置成wrap_content
-        wvSettings.setBuiltInZoomControls(true);
-        //指定页面默认编码,不过即使这么设置了,loadData()仍有可能出现中文乱码的请款
-        wvSettings.setDefaultTextEncodingName("utf-8");
-
-        //强制手机使用 desktop-size viewport 以自适应手机分辨率
-        //        wvSettings.setUseWideViewPort(true);
-        //        wvSettings.setLoadWithOverviewMode(true);
 
         mWv.addJavascriptInterface(new BasicJsAppInterface(this), "AndroidApp");
 
@@ -189,6 +175,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i(TAG, getCookie());
+    }
+
+    /**
+     * webView设置
+     */
+    private void initSettings() {
+        WebSettings wvSettings = mWv.getSettings();
+        //启用js代码支持
+        wvSettings.setJavaScriptEnabled(true);
+        //使用内置的缩放控制功能按钮,有些网页可能会禁用掉,所以不一定看的到效果
+        //另外,官网建议启用缩放控制的时候,webView的宽/高不要设置成wrap_content
+        wvSettings.setBuiltInZoomControls(true);
+        //指定页面默认编码,不过即使这么设置了,loadData()仍有可能出现中文乱码的请款
+        wvSettings.setDefaultTextEncodingName("utf-8");
+
+        //优先使用缓存,然后才是网络加载
+        wvSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+
+        //强制手机使用 desktop-size viewport 以自适应手机分辨率
+        //        wvSettings.setUseWideViewPort(true);
+        //        wvSettings.setLoadWithOverviewMode(true);
+    }
+
+    private String getCookie() {
+        CookieManager cm = CookieManager.getInstance();
+        String cookie = cm.getCookie(mUrl);
+        if (TextUtils.isEmpty(cookie)) {
+            cookie = "there is no cookie exist";
+        }
+        return cookie;
+    }
+
+    @Override
     public void onBackPressed() {
         if (mWv.canGoBack()) {
             mWv.goBack();
@@ -197,12 +219,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
     /**
      * 加载网页数据
      */
     private void loadPage() {
         // 1. 从本机asset目录中加载网页资源
         mWv.loadUrl("file:///android_asset/index.html");
+        //        mWv.loadUrl("file:///android_asset/pictureCacheTest.html");
 
         //      // 2. 加载HTML String
         //        String summary = "<!DOCTYPE html>\n" +
@@ -232,5 +256,11 @@ public class MainActivity extends AppCompatActivity {
 
         //        // 3. 加载线上资源
         //        mWv.loadUrl(mUrl);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
     }
 }
