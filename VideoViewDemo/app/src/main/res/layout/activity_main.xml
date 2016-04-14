@@ -9,7 +9,7 @@
     <RelativeLayout
         android:id="@+id/rl_vv"
         android:layout_width="match_parent"
-        android:layout_height="200dp"
+        android:layout_height="wrap_content"
         android:background="@android:color/black"
         android:minHeight="200dp"
         android:visibility="visible">
@@ -24,6 +24,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_below="@+id/rl_vv"
         android:orientation="horizontal">
 
@@ -31,18 +32,18 @@
             android:id="@+id/btn_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="start"/>
+            android:text="播放"/>
 
         <Button
             android:id="@+id/btn_change"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Change"/>
+            android:text="横竖屏切换"/>
 
         <Button
             android:id="@+id/btn_seek"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="seek_to_middle"/>
+            android:text="跳转到视频中间"/>
     </LinearLayout>
 </RelativeLayout>

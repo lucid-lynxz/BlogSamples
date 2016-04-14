@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">VideoViewDemo</string>
+    <string name="network_error">网络不给力,请检查后再试</string>
+    <string name="ok">确定</string>
 </resources>

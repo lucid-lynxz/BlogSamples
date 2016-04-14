@@ -1,4 +1,4 @@
-package org.lynxz.videoviewdemo;
+package org.lynxz.videoviewdemo.utils;
 
 import android.content.Context;
 

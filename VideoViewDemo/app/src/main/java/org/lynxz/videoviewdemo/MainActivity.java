@@ -1,9 +1,14 @@
 package org.lynxz.videoviewdemo;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -15,8 +20,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.MediaController;
-import android.widget.Toast;
 import android.widget.VideoView;
+
+import org.lynxz.videoviewdemo.utils.DensityUtil;
+import org.lynxz.videoviewdemo.utils.MessageUtils;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnInfoListener, View.OnTouchListener {
 
@@ -27,12 +37,19 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
     //    private int mStreamVolume;
     private static final String VIDEO_TAG = "video_sample";
     private int mPlayingPos;
+    private int mNetworkState = 0;//当前网络状态 0-不可用 1-wifi 2-mobile
+    private BroadcastReceiver mNetworkReceiver;
+    private int mLastLoadLength = -1;//断网/onStop前缓存的位置信息(ms)
+    private Uri mVideoUri;
+    private static final String SCHEME_HTTP = "http";
+    private Timer mCheckPlayingProgressTimer;
+    private int deltaTime = 2500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        debugLog("onCreate mPlayingPos = " + mPlayingPos);
         initData();
         initView();
     }
@@ -87,27 +104,43 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
         mRlVv = findViewById(R.id.rl_vv);
         mVv = (VideoView) findViewById(R.id.vv);
 
+        //        mVideoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.shuai_dan_ge);
+        mVideoUri = Uri.parse("http://v11.huayu.nd/b/p/3038/5696b39d27454ed08f973123f936f7fd/5696b39d27454ed08f973123f936f7fd.v.640.480.mp4");
+
         //添加播放控制条并设置视频源
         mVv.setMediaController(new MediaController(this));
-        Uri rawUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.shuai_dan_ge);
-        //Uri onlineUri = Uri.parse("http://v2.mukewang.com/c4f8a4c9-e888-4793-8fd6-ba3c592de8f0/L.mp4?auth_key=1459388431-0-0-ad75792f577d6fc9e045425a706e892f");
-        mVv.setVideoURI(rawUri);
+        mVv.setVideoURI(mVideoUri);
+        mLastLoadLength = -1;
+        mPlayingPos = -1;
 
         mVv.setOnPreparedListener(this);
         mVv.setOnErrorListener(this);
         mVv.setOnCompletionListener(this);
 
+        //播放按钮
         findViewById(R.id.btn_play).setOnClickListener(View -> {
+            if (mNetworkState == 0) {
+                if (SCHEME_HTTP.equalsIgnoreCase(mVideoUri.getScheme())) {
+                    if (mPlayingPos >= mLastLoadLength - deltaTime) {
+                        MessageUtils.showAlertDialog(this, "提示", getResources().getString(R.string.network_error), null);
+                        return;
+                    }
+                }
+
+            }
+
             mVv.start();
-            //            mVv.requestFocus();
+            //mVv.requestFocus();
         });
 
+        // 跳转
         findViewById(R.id.btn_seek).setOnClickListener(view -> {
             int targetPos = mVv.getDuration() / 2;
             mVv.seekTo(targetPos);
-            showToast("after seek currPos = " + mVv.getCurrentPosition() + " targetPos = " + targetPos);
+            MessageUtils.showToast(MainActivity.this, "after seek currPos = " + mVv.getCurrentPosition() + " targetPos = " + targetPos);
         });
 
+        //横竖屏切换
         findViewById(R.id.btn_change).setOnClickListener(View -> {
             if (getRequestedOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
                 setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -118,10 +151,71 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
 
 
         mAudioManager = (AudioManager) getSystemService(AUDIO_SERVICE);
-        //        mStreamVolume = mAudioManager.getStreamVolume(mAudioManager.STREAM_MUSIC);
+        //mStreamVolume = mAudioManager.getStreamVolume(mAudioManager.STREAM_MUSIC);
 
         mGestureDetector = new GestureDetector(this, mGestureListener);
         mRlVv.setOnTouchListener(this);
+
+        registerNetworkReceiver();
+    }
+
+    /**
+     * 监听网络变化,用于重新缓冲
+     */
+    private void registerNetworkReceiver() {
+        if (mNetworkReceiver == null) {
+            mNetworkReceiver = new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    if (SCHEME_HTTP.equalsIgnoreCase(mVideoUri.getScheme())
+                            && action.equalsIgnoreCase(ConnectivityManager.CONNECTIVITY_ACTION)) {
+                        doWhenNetworkChange();
+                    }
+                }
+            };
+        }
+        registerReceiver(mNetworkReceiver, new IntentFilter(ConnectivityManager.CONNECTIVITY_ACTION));
+    }
+
+
+    /**
+     * 网络播放
+     */
+    public void doWhenNetworkChange() {
+        mNetworkState = NetworkHelper.getNetworkType(this);
+        //保存当前已缓存长度
+        int bufferPercentage = mVv.getBufferPercentage();
+        mLastLoadLength = bufferPercentage * mVv.getDuration() / 100;
+        //这里需要判断 0
+        int currentPosition = mVv.getCurrentPosition();
+        if (currentPosition > 0) {
+            mPlayingPos = currentPosition;
+        }
+        debugLog(bufferPercentage + " 网络变化 ... " + mNetworkState + " 缓存长度 " + mLastLoadLength + " -- " + currentPosition);
+
+        if (mNetworkState == NetworkHelper.NETWORK_TYPE_INVALID && bufferPercentage < 100) {
+            // 监听当前播放位置,在达到缓冲长度前自动停止
+            if (mCheckPlayingProgressTimer == null) {
+                mCheckPlayingProgressTimer = new Timer();
+            }
+            mCheckPlayingProgressTimer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    if (mPlayingPos >= mLastLoadLength - deltaTime) {
+                        mVv.pause();
+                    }
+                }
+            }, 0, 1000);//每秒检测一次
+        } else {
+            restartPlayVideo();
+        }
+    }
+
+    private void unregisterNetworkReceiver() {
+        if (mNetworkReceiver != null) {
+            unregisterReceiver(mNetworkReceiver);
+        }
     }
 
 
@@ -166,19 +260,39 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
-        showToast("播放时发生错误 " + what);
-        return false;
+        //        MessageUtils.showToast(MainActivity.this, "播放时发生错误 " + what + " mPlayingPos = " + mPlayingPos);
+        debugLog("onError what = " + what + " mPlayingPos = " + mPlayingPos);
+        if (SCHEME_HTTP.equalsIgnoreCase(mVideoUri.getScheme()) && mNetworkState == 0) {
+            MessageUtils.showAlertDialog(this, "提示", getResources().getString(R.string.network_error), null);
+        } else {
+            restartPlayVideo();
+        }
+        return true;
+    }
+
+    private void restartPlayVideo() {
+        //todo 添加 progressBar 体验好点
+        if (mCheckPlayingProgressTimer != null) {
+            mCheckPlayingProgressTimer.cancel();
+            mCheckPlayingProgressTimer = null;
+        }
+        mVv.setVideoURI(mVideoUri);
+        mVv.start();
+        mVv.seekTo(mPlayingPos);
+
+        mLastLoadLength = -1;
+        mPlayingPos = 0;
     }
 
     @Override
     public void onPrepared(MediaPlayer mp) {
         //        mVv.start();
-        Log.d(VIDEO_TAG, "onPrepared currPos = " + mVv.getCurrentPosition());
+        debugLog("onPrepared currPos = " + mVv.getCurrentPosition());
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
-        showToast("播放完毕");
+        MessageUtils.showToast(MainActivity.this, "播放完毕");
     }
 
     @Override
@@ -220,12 +334,20 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
 
     @Override
     protected void onResume() {
-        if (mPlayingPos > 0) {
-            mVv.start();
-            mVv.seekTo(mPlayingPos);
-            mPlayingPos = 0;
-        }
         super.onResume();
+        mNetworkState = NetworkHelper.getNetworkType(this);
+        debugLog("onResume mPlayingPos " + mPlayingPos);
+        //播放网络视频时,需要检测判断网络状态变化
+        if (SCHEME_HTTP.equalsIgnoreCase(mVideoUri.getScheme()) && mNetworkState == 0) {
+            MessageUtils.showAlertDialog(this, "提示", getResources().getString(R.string.network_error), null);
+        } else {
+            if (mPlayingPos > 0) {
+                mVv.start();
+                mVv.seekTo(mPlayingPos);
+                mPlayingPos = 0;
+                mLastLoadLength = -1;
+            }
+        }
     }
 
     @Override
@@ -236,13 +358,31 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
     }
 
     @Override
+    protected void onStop() {
+        debugLog("onStop mPlayingPos0 = " + mPlayingPos + " -- " + mLastLoadLength);
+        if (mVv.isPlaying() || mVv.canPause()) {
+            mVv.stopPlayback();
+        }
+        debugLog("onStop mPlayingPos1 = " + mPlayingPos + " -- " + mLastLoadLength);
+        mLastLoadLength = 0;
+        super.onStop();
+        debugLog("onStop mPlayingPos = " + mPlayingPos + " -- " + mLastLoadLength);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
-        mVv.stopPlayback();
+        debugLog("onDestroy");
+        if (mCheckPlayingProgressTimer != null) {
+            mCheckPlayingProgressTimer.cancel();
+            mCheckPlayingProgressTimer = null;
+        }
+
         Window mWindow = getWindow();
         WindowManager.LayoutParams mParams = mWindow.getAttributes();
         mParams.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE;
         mWindow.setAttributes(mParams);
+        unregisterNetworkReceiver();
     }
 
     @Override
@@ -254,14 +394,14 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
         }
     }
 
-    private void showToast(String msg) {
-        Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-    }
-
     private boolean ifSdCardAccessable() {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             return true;
         }
         return false;
+    }
+
+    public void debugLog(String msg) {
+        Log.d(this.getClass().getName(), msg);
     }
 }
