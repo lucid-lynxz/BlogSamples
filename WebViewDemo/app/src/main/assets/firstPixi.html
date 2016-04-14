@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>pixiDemo</title>
+    <link rel="stylesheet" href="./lib/css/bootstrap.min.css"/>
+    <style>
+        div.container {
+            border: 1px solid salmon;
+            width: 100%;
+            height: 500px;
+        }
+
+        div.toolbar {
+            margin-left: 10px;
+            margin-bottom: 3px;
+        }
+
+        body {
+            margin: 10px;
+            padding: 10px;
+        }
+    </style>
+
+    <script src=./lib/jquery-1.11.3.js></script>
+    <script src="./lib/pixi.js"></script>
+</head>
+<body>
+<div class="toolbar row">
+    <div class="col-md-3">
+
+        <button type=button class="btn btn-default color" data-toggle="tooltip" title="随机改变方形区域颜色">color</button>
+        <button type=button class="btn btn-default rotate" data-toggle="tooltip" title="按住shift可以反向旋转">rotate</button>
+        <button type=button class="btn btn-default scale" data-toggle="tooltip" title="按住shift可进行缩小">scale</button>
+    </div>
+    <div class="col-md-3" style="font-size: 12px">
+        <!--<span class="label label-info">-->
+        <ul>
+            <li>按钮配合shift键可进行反向操作;</li>
+            <li>拖动<span style="color: #FF0000">红色</span>按钮进行缩放;</li>
+            <li>拖动<span style="color: #00aa00">绿色</span>按钮进行旋转;</li>
+        </ul>
+        <!--</span>-->
+    </div>
+</div>
+
+
+<div class="container canvasContainer"></div>
+
+<script>
+    'use strict';
+    let RENDER_WIDTH = window.innerWidth;
+    let RENDER_HEIGHT = window.innerHeight;
+    const NAME_RECTANGLE = 'rectangle';
+    const NAME_CIRCLE_SCALE = 'name_circle_scale';
+    const NAME_CIRCLE_ROTATE = 'name_circle_rotate';
+    let config = {
+        render_width: $(".canvasContainer").width(),//window.innerWidth,
+        render_height: $(".canvasContainer").height(),//window.innerHeight,
+        minStep: 5,//鼠标最小单步长
+        rotateStep: Math.PI / 180 * 10,
+        scaleDegreeRange: 20,//拖动缩放操作的向量夹角范围,单位:度
+        minScaleRatio: 0.3//最小可缩小倍数
+    };
+
+    let downPoint = new PIXI.Point(0, 0);
+    let worldOrigin = new PIXI.Point(0, 0);
+    let downRotateAngle = null;
+    let ifShiftKeyPress = false;//是否激发了shift按键
+    let selected = null;
+
+    let renderer = new PIXI.autoDetectRenderer(config.render_width, config.render_height, {
+        transparent: true,
+        antialias: true
+    });
+    $(".canvasContainer")[0].appendChild(renderer.view);
+    let stage = new PIXI.Container();
+
+
+    let rect = Rectangle(50, 50, 100, 100, NAME_RECTANGLE, 0x0000ff, 0.9);
+
+    let circleScale = drawCircle(30, 30, 5, NAME_CIRCLE_SCALE, 0xff0000, 0.8);
+    let circleRotate = drawCircle(30, 30, 5, NAME_CIRCLE_ROTATE, 0x00ff00, 0.8);
+    circleScale.position.x = rect.position.x - rect.width / 2;
+    circleScale.position.y = rect.position.y - rect.height / 2;
+    circleRotate.position.x = rect.position.x + rect.width / 2;
+    circleRotate.position.y = rect.position.y + rect.height / 2;
+
+    let group = new PIXI.Container();
+    group.addChild(rect);
+    group.addChild(circleScale);
+    group.addChild(circleRotate);
+    // 以rect的中心点为旋转中心点
+    group.pivot.x = rect.position.x;
+    group.pivot.y = rect.position.y;
+    group.position.x = config.render_width / 2;
+    group.position.y = config.render_height / 2;
+    group.name = 'group';
+    stage.addChild(group);
+
+    for (let i = 0, max = group.children.length; i < max; i++) {
+        group.children[i].interactive = true;
+        group.children[i].on('mousedown', mouseDown)
+                .on('mousemove', mouseMove)
+                .on('touchstart', mouseDown)
+                .on('touchmove', mouseMove);
+    }
+
+    group.interactive = true;
+    rect.on('click', click);
+
+    $(".canvasContainer").mouseout(mouseUp).mouseup(mouseUp);
+    render();
+
+    function Rectangle(x, y, width, height, name, fillColor, alpha) {
+        let graphic = new PIXI.Graphics();
+        graphic.position.x = x + width / 2;
+        graphic.position.y = y + height / 2;
+        graphic.originWidth = width;
+        graphic.originHeight = height;
+        graphic.beginFill(fillColor);
+        graphic.drawRect(-width / 2, -height / 2, width, height);
+        graphic.endFill();
+        graphic.alpha = alpha || 1;
+        graphic.name = name || NAME_RECTANGLE;
+
+        //相对与上层container
+        graphic.centerPoint = graphic.position.clone();
+        graphic.leftTopPoint = new PIXI.Point(x, y);
+        return graphic;
+    }
+
+    function drawCircle(anchorX, anchorY, radius, name, fillColor, alpha) {
+        let graphic = new PIXI.Graphics();
+        graphic.position.x = anchorX + radius;
+        graphic.position.y = anchorY + radius;
+        graphic.beginFill(fillColor);
+        graphic.drawCircle(0, 0, radius);
+        graphic.endFill();
+        graphic.alpha = alpha || 1;
+        graphic.name = name || NAME_CIRCLE_SCALE;
+        return graphic;
+    }
+
+    function mouseDown(event) {
+        downPoint.copy(event.data.getLocalPosition(stage));//global坐标
+        if (event.target.name == NAME_RECTANGLE) {//改变颜色/平移
+            selected = rect;
+        } else if (event.target.name == NAME_CIRCLE_SCALE) {//缩放
+            selected = circleScale;
+            downPoint.copy(event.data.getLocalPosition(group))
+        } else if (event.target.name == NAME_CIRCLE_ROTATE) {//旋转
+            selected = circleRotate;
+        } else {
+            selected = null;
+            return;
+        }
+        selected.data = event.data;
+        selected.dragMode = true;
+    }
+
+    function mouseMove(event) {
+        if (!selected) {
+            return;
+        }
+        if (selected && selected.dragMode) {
+            let currentPoint = event.data.getLocalPosition(stage);
+            let deltaX = (currentPoint.x - downPoint.x);
+            let deltaY = (currentPoint.y - downPoint.y);
+            if (selected.name == NAME_RECTANGLE) {
+                moveGroup(group, deltaX, deltaY);
+            } else if (selected.name == NAME_CIRCLE_SCALE) {
+                /*
+                 *   通过向量夹角判断拖动方向 ==> 放大/缩小
+                 * */
+                currentPoint = event.data.getLocalPosition(group);
+                let moveVector = currentPoint.sub(downPoint);
+                let delta = moveVector.length();
+                if (delta <= config.minStep) {
+                    return false;
+                }
+                let rotateAngle = group.rotation * 180 / Math.PI % 360;
+                //downPoint和currentPoint都是相对于group,求角度时,需加上container的旋转角度,转成实际世界坐标系的角度
+                let centerLeftTopVector = rect.leftTopPoint.sub(rect.centerPoint);
+                let moveAngle = moveVector.deg() - rotateAngle;
+                if (moveAngle < 0) {//角度范围0~360
+                    moveAngle = 360 + moveAngle;
+                }
+                let oriAngle = (centerLeftTopVector.deg() - rotateAngle);
+                let deltaDeg = Math.abs(moveAngle - oriAngle) % 360;
+
+                //判断拖动方向 -- 旋转/缩放
+                if (deltaDeg <= config.scaleDegreeRange || (deltaDeg >= (180 - config.scaleDegreeRange) && deltaDeg <= (180 + config.scaleDegreeRange))) { // 缩放
+                    if (!scaleGroup(rect, deltaDeg, delta)) {
+                        moveVector = null;
+                        centerLeftTopVector = null;
+                        return;
+                    }
+                    moveVector = null;
+                    centerLeftTopVector = null;
+                }
+            } else if (selected.name == NAME_CIRCLE_ROTATE) {
+                let globalRectPos = rect.toGlobal(worldOrigin);
+                if (!downRotateAngle) {
+                    downRotateAngle = -downPoint.sub(globalRectPos).deg();
+                }
+                let currentAngle = -currentPoint.sub(globalRectPos).deg();
+                let deltaAngle = currentAngle - downRotateAngle;
+                if (Math.abs(deltaAngle) <= 1) {
+                    return;
+                }
+
+                group.rotation += deltaAngle * Math.PI / 180;
+                console.log(deltaAngle, group.rotation * 180 / Math.PI);
+                downRotateAngle = currentAngle;
+            }
+            downPoint.copy(currentPoint);
+            currentPoint = null;
+            render();
+        }
+    }
+
+    PIXI.Point.prototype.sub = function (p) {
+        "use strict";
+        return new PIXI.Point(this.x - p.x, this.y - p.y);
+    };
+
+    PIXI.Point.prototype.length = function () {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    };
+
+    PIXI.Point.prototype.deg = function () {
+        let angle = 0;
+        if (this.x == 0) {
+            if (this.y > 0) {
+                angle = -90;
+            } else {
+                angle = 90;
+            }
+        } else {
+            angle = Math.atan2(-this.y, this.x) * 180 / Math.PI;
+        }
+        return angle;
+    };
+
+    PIXI.Point.prototype.toString = function () {
+        return ("Point(" + this.x + "," + this.y + ")");
+    };
+
+    /**
+     * 平移所有图形
+     */
+    function moveGroup(target, deltaX, deltaY) {
+        deltaX = deltaX || 0;
+        deltaY = deltaY || 0;
+        target.position.x += deltaX;
+        target.position.y += deltaY;
+    }
+
+    /**
+     * 缩放功能
+     * @param target 缩放对象
+     * @param deltaAngle 鼠标移动与指定向量的夹角
+     * @param delta 鼠标移动量
+     * @returns {boolean} 是否缩放成功
+     */
+    function scaleGroup(target, deltaAngle, delta) {
+        delta = delta || 0;
+
+        if (deltaAngle <= config.scaleDegreeRange) {
+            deltaAngle = 1;
+        } else {
+            deltaAngle = -1;
+        }
+
+        let ratio = target.scale.x + deltaAngle * delta / 100;
+        if (ratio < config.minScaleRatio) {
+            ratio = config.minScaleRatio;
+        }
+        target.scale.x = ratio;
+        target.scale.y = ratio;
+
+        circleScale.position.set(rect.position.x - rect.width / 2, rect.position.y - rect.height / 2);
+        circleRotate.position.set(rect.position.x + rect.width / 2, rect.position.y + rect.height / 2);
+        rect.centerPoint.copy(rect.position);
+        rect.leftTopPoint.copy(circleScale.position);
+        return true;
+    }
+
+    function mouseUp(event) {
+        if (selected) {
+            selected.dragMode = false;
+            selected.data = null;
+        }
+        downRotateAngle = null;
+        selected = null;
+        render();
+    }
+
+    function click(event) {
+        let color = randomColor();
+        rect.clear();
+        rect.beginFill(color);
+        rect.drawRect(-rect.originWidth / 2, -rect.originHeight / 2, rect.originWidth, rect.originHeight);
+        rect.endFill();
+        render();
+    }
+
+    function randomColor() {
+        var colorStr = Math.floor(Math.random() * 0xFFFFFF).toString(16).toUpperCase();
+        return "0x" + colorStr;
+    }
+
+    $("button.rotate").click(function () {
+        if (ifShiftKeyPress) {
+            group.rotation -= config.rotateStep;
+        } else {
+            group.rotation += config.rotateStep;
+        }
+        render();
+    });
+
+    $("button.color").click(function (event) {
+        click(event);
+        render();
+    });
+    $("button.scale").click(function (event) {
+        let angle = ifShiftKeyPress ? config.scaleDegreeRange + 10 : config.scaleDegreeRange;
+        scaleGroup(rect, angle, 10);
+        render();
+    });
+
+
+    $("body").keydown(function (e) {
+        if (e.shiftKey && e.which == 16) {//shift按键
+            ifShiftKeyPress = true;
+        }
+    }).keyup(function () {
+        ifShiftKeyPress = false;
+    });
+
+
+    function render() {
+        renderer.render(stage);
+    }
+</script>
+</body>
+</html>

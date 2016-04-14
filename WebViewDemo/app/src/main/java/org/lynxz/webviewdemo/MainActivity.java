@@ -196,6 +196,8 @@ public class MainActivity extends AppCompatActivity {
         //优先使用缓存,然后才是网络加载
         wvSettings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
 
+        //        wvSettings.setPluginState(WebSettings.PluginState.ON);
+
         //强制手机使用 desktop-size viewport 以自适应手机分辨率
         //        wvSettings.setUseWideViewPort(true);
         //        wvSettings.setLoadWithOverviewMode(true);
@@ -226,6 +228,9 @@ public class MainActivity extends AppCompatActivity {
     private void loadPage() {
         // 1. 从本机asset目录中加载网页资源
         mWv.loadUrl("file:///android_asset/index.html");
+
+        // fixi.html 这个没运行成功,页面引用js没有执行
+        //        mWv.loadUrl("file:///android_asset/firstPixi.html");
         //        mWv.loadUrl("file:///android_asset/pictureCacheTest.html");
 
         //      // 2. 加载HTML String
@@ -261,6 +266,5 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
     }
 }
