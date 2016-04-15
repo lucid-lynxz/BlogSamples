@@ -104,12 +104,18 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
         mRlVv = findViewById(R.id.rl_vv);
         mVv = (VideoView) findViewById(R.id.vv);
 
+        // 播放本地文件
         //        mVideoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.shuai_dan_ge);
-        mVideoUri = Uri.parse("http://v11.huayu.nd/b/p/3038/5696b39d27454ed08f973123f936f7fd/5696b39d27454ed08f973123f936f7fd.v.640.480.mp4");
+        //        mVv.setVideoURI(mVideoUri);
+
+        // 播放在线视频
+        // "http://7xt0mj.com1.z0.glb.clouddn.com/lianaidaren.v.640.480.mp4";
+        // "http://7xt0mj.com1.z0.glb.clouddn.com/xia.v.1280.720.f4v" 不支持f4v啊
+        mVideoUri = Uri.parse("http://7xt0mj.com1.z0.glb.clouddn.com/lianaidaren.v.640.480.mp4");
+        mVv.setVideoPath(mVideoUri.toString());
 
         //添加播放控制条并设置视频源
         mVv.setMediaController(new MediaController(this));
-        mVv.setVideoURI(mVideoUri);
         mLastLoadLength = -1;
         mPlayingPos = -1;
 
