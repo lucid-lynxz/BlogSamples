@@ -5,7 +5,6 @@
     <title>svg动画小demo</title>
 
     <style>
-        /*使用css代码控制的话,请取消js代码*/
         /*path {*/
         /*!*css定义svg实线和空白区域的长度*!*/
         /*!*stroke-dasharray: 1700;*!*/
@@ -54,19 +53,31 @@
 //                    'stroke-dashoffset 5s ease-in-out';
 //            path.style.strokeDashoffset = '0';
 
+            var initial_ts = new Date().getTime();
+            var duration = 5000;
 
             // 方式2:带时间设置 参考文章: http://product.voxmedia.com/2013/11/25/5426880/polygon-feature-design-svg-animations-for-fun-and-profit
-            var initial_ts = new Date().getTime();
-            var duration = 5000; // this animation should last for 5 seconds
+//            var draw = function () {
+//                var progress = (Date.now() - initial_ts) / duration;
+//                if (progress < 1) {
+//                    path.style.strokeDashoffset = Math.floor(len * (1 - progress));
+//                    setTimeout(draw, 50);
+//                }
+//            };
+//            draw();
 
-            var draw = function () {
+            //方式3:requestAnimationFrame
+            var handle = 0;
+            var animate = function () {
                 var progress = (Date.now() - initial_ts) / duration;
-                if (progress < 1) {
+                if (progress >= 1) {
+                    window.cancelAnimationFrame(handle);
+                } else {
                     path.style.strokeDashoffset = Math.floor(len * (1 - progress));
-                    setTimeout(draw, 50);
+                    handle = window.requestAnimationFrame(animate);
                 }
             };
-            draw();
+            animate();
         };
     </script>
 </head>
