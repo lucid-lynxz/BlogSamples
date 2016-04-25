@@ -43,6 +43,7 @@
 
             //==============================================
             // 以下为通过js代码控制动画,使用以下功能,请注释掉css动画设置
+
             // 方式1:参考文章: https://jakearchibald.com/2013/animated-line-drawing-svg/
 //            path.style.transition = path.style.WebkitTransition =
 //                    'none';
@@ -57,27 +58,27 @@
             var duration = 5000;
 
             // 方式2:带时间设置 参考文章: http://product.voxmedia.com/2013/11/25/5426880/polygon-feature-design-svg-animations-for-fun-and-profit
-//            var draw = function () {
-//                var progress = (Date.now() - initial_ts) / duration;
-//                if (progress < 1) {
-//                    path.style.strokeDashoffset = Math.floor(len * (1 - progress));
-//                    setTimeout(draw, 50);
-//                }
-//            };
-//            draw();
-
-            //方式3:requestAnimationFrame
-            var handle = 0;
-            var animate = function () {
+            var draw = function () {
                 var progress = (Date.now() - initial_ts) / duration;
-                if (progress >= 1) {
-                    window.cancelAnimationFrame(handle);
-                } else {
+                if (progress < 1) {
                     path.style.strokeDashoffset = Math.floor(len * (1 - progress));
-                    handle = window.requestAnimationFrame(animate);
+                    setTimeout(draw, 50);
                 }
             };
-            animate();
+            draw();
+
+            //方式3:requestAnimationFrame
+//            var handle = 0;
+//            var animate = function () {
+//                var progress = (Date.now() - initial_ts) / duration;
+//                if (progress >= 1) {
+//                    window.cancelAnimationFrame(handle);
+//                } else {
+//                    path.style.strokeDashoffset = Math.floor(len * (1 - progress));
+//                    handle = window.requestAnimationFrame(animate);
+//                }
+//            };
+//            animate();
         };
     </script>
 </head>
