@@ -5,14 +5,19 @@
     <title>svg动画小demo</title>
 
     <style>
-        path {
-            /*css定义svg实线和空白区域的长度*/
-            /*stroke-dasharray: 1700;*/
-            /*stroke-dashoffset: 1700;*/
-            animation: dash 3s linear;
-            /*动画完成后,保持图案*/
-            animation-fill-mode: forwards;
-        }
+        /*使用css代码控制的话,请取消js代码*/
+        /*path {*/
+        /*!*css定义svg实线和空白区域的长度*!*/
+        /*!*stroke-dasharray: 1700;*!*/
+        /*!*stroke-dashoffset: 1700;*!*/
+        /*animation: dash 3s linear;*/
+        /*!*动画完成后,保持图案*!*/
+        /*animation-fill-mode: forwards;*/
+
+        /*!*额外属性,围绕中心位置旋转等*!*/
+        /*transform-origin: 50% 50%;*/
+        /*transform: rotate(45deg);*/
+        /*}*/
 
         /*将stroke-dashoffset属性变成0的过程就形成了动画效果*/
         @keyframes dash {
@@ -39,15 +44,29 @@
 
             //==============================================
             // 以下为通过js代码控制动画,使用以下功能,请注释掉css动画设置
-            //参考文章: https://jakearchibald.com/2013/animated-line-drawing-svg/
+            // 方式1:参考文章: https://jakearchibald.com/2013/animated-line-drawing-svg/
 //            path.style.transition = path.style.WebkitTransition =
 //                    'none';
 //            // Trigger a layout so styles are calculated & the browser
 //            // picks up the starting position before animating
 //            path.getBoundingClientRect();
 //            path.style.transition = path.style.WebkitTransition =
-//                    'stroke-dashoffset 2s ease-in-out';
+//                    'stroke-dashoffset 5s ease-in-out';
 //            path.style.strokeDashoffset = '0';
+
+
+            // 方式2:带时间设置 参考文章: http://product.voxmedia.com/2013/11/25/5426880/polygon-feature-design-svg-animations-for-fun-and-profit
+            var initial_ts = new Date().getTime();
+            var duration = 5000; // this animation should last for 5 seconds
+
+            var draw = function () {
+                var progress = (Date.now() - initial_ts) / duration;
+                if (progress < 1) {
+                    path.style.strokeDashoffset = Math.floor(len * (1 - progress));
+                    setTimeout(draw, 50);
+                }
+            };
+            draw();
         };
     </script>
 </head>
