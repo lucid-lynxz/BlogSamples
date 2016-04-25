@@ -228,6 +228,8 @@ public class MainActivity extends AppCompatActivity {
     private void loadPage() {
         // 1. 从本机asset目录中加载网页资源
         mWv.loadUrl("file:///android_asset/index.html");
+        //测试svg动画
+        //        mWv.loadUrl("file:///android_asset/SvgDemo.html");
 
         // fixi.html 这个没运行成功,页面引用js没有执行
         //        mWv.loadUrl("file:///android_asset/firstPixi.html");
