@@ -19,6 +19,8 @@
         </activity>
         <activity android:name=".ImageTextWithSpanActivity">
         </activity>
+        <activity android:name=".CircleNumberActivity">
+        </activity>
     </application>
 
 </manifest>
