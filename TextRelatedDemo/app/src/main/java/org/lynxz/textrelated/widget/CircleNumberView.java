@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -20,7 +21,7 @@ public class CircleNumberView extends View {
     private int circleSize;//绘图矩形区域大小
     private final int AREA_MIN_SIZE = sp2px(getContext(), 19);//绘图区域最小值
     //    private final int AREA_MIN_SIZE = 30;//绘图区域最小值
-    private int mNumber;//文字
+    private int mNumber = -1;//显示的文字数字
     private String mText;//绘制的文本
     private int mForeColor;//文本颜色
     private Paint mPaint;
@@ -37,16 +38,23 @@ public class CircleNumberView extends View {
         super(context, attrs, defStyleAttr);
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CircleNumberView, defStyleAttr, 0);
         this.mForeColor = ta.getColor(R.styleable.CircleNumberView_foreColor, getResources().getColor(R.color.circle_number_color));
-        this.mNumber = ta.getInteger(R.styleable.CircleNumberView_numberIndex, 1);//0~99
+
+        String tempIndex = ta.getString(R.styleable.CircleNumberView_index);
+        if (isNumeric(tempIndex)) {
+            this.mNumber = Integer.valueOf(tempIndex);
+            this.mText = this.mNumber + "";
+        } else {
+            this.mText = tempIndex;
+        }
+
         this.textSize = ta.getDimensionPixelSize(R.styleable.CircleNumberView_textSize, 30);
-        this.mText = this.mNumber + "";
         this.mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         ta.recycle();
     }
 
-    public void setNumber(int index) {
-        this.mNumber = index;
-        this.mText = this.mNumber + "";
+    public void setText(String text) {
+        this.mNumber = isNumeric(text) ? Integer.valueOf(text) : -1;
+        this.mText = text;
         invalidate();
     }
 
@@ -65,7 +73,7 @@ public class CircleNumberView extends View {
         this.circleSize = Math.min(width, height);
         if (this.circleSize >= this.textSize) {
             double ratio = 0.8;
-            if (this.mNumber >= 10) {
+            if (mNumber >= 10 || mNumber < 0) {
                 ratio = 0.6;
             }
             this.textSize = (float) (this.circleSize * ratio);
@@ -90,5 +98,12 @@ public class CircleNumberView extends View {
         float fontHeight = fontMetrics.descent - fontMetrics.ascent;
         float baseY = radius - (fontMetrics.descent - fontHeight / 2);
         canvas.drawText(this.mText, radius, baseY, mPaint);
+    }
+
+    public boolean isNumeric(String str) {
+        if (!TextUtils.isEmpty(str))
+            return str.matches("^[0-9]*$");
+        else
+            return false;
     }
 }

@@ -17,7 +17,7 @@
         <org.lynxz.textrelated.widget.CircleNumberView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:numberIndex="9"/>
+            app:index="9"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:foreColor="@android:color/holo_blue_bright"
-            app:numberIndex="99"
+            app:index="99"
             app:textSize="20sp"/>
 
         <TextView
@@ -58,13 +58,33 @@
         <org.lynxz.textrelated.widget.CircleNumberView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:numberIndex="999"/>
+            app:index="A"/>
+
+        <org.lynxz.textrelated.widget.CircleNumberView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:index="a"/>
+
+        <org.lynxz.textrelated.widget.CircleNumberView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:foreColor="#f00"
+            app:index="H"
+            app:textSize="20sp"/>
+
+        <org.lynxz.textrelated.widget.CircleNumberView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:foreColor="#00f"
+            app:index="你"
+            app:textSize="40sp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="三位数效果 - 尽量控制在1~99以内"/>
+            android:text="字母效果"
+            android:textSize="30sp"/>
     </LinearLayout>
 
 </LinearLayout>

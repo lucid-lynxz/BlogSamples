@@ -2,7 +2,7 @@
 <resources>
     <declare-styleable name="CircleNumberView">
         <attr name="foreColor" format="color"/>
-        <attr name="numberIndex" format="integer"/>
+        <attr name="index" format="string"/>
         <attr name="textSize" format="dimension"/>
     </declare-styleable>
 </resources>
