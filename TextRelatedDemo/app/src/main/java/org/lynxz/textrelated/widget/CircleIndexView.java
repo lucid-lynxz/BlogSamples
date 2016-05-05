@@ -36,13 +36,11 @@ public class CircleIndexView extends View {
 
     public CircleIndexView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        this.mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         TypedArray ta = context.getTheme().obtainStyledAttributes(attrs, R.styleable.CircleIndexView, defStyleAttr, 0);
         this.mForeColor = ta.getColor(R.styleable.CircleIndexView_foreColor, getResources().getColor(R.color.circle_number_color));
-
         this.mText = ta.getString(R.styleable.CircleIndexView_index);
-
         this.mTextSize = ta.getDimensionPixelSize(R.styleable.CircleIndexView_textSize, 30);
-        this.mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         this.mTextWidth = getTextWidth(mText);
         this.mStrokeWidth = (int) (this.mTextSize / 15);
         ta.recycle();
@@ -50,6 +48,7 @@ public class CircleIndexView extends View {
 
     public void setText(String text) {
         this.mText = text;
+        this.mTextWidth = getTextWidth(mText);
         invalidate();
     }
 
@@ -64,7 +63,7 @@ public class CircleIndexView extends View {
         this.circleSize = Math.max(width, height);
 
         setMeasuredDimension(circleSize, circleSize);
-        //        Log.i("xxx", "circleSize " + circleSize + " mTextWidth = " + mTextWidth);
+        // Log.i("xxx", "circleSize " + circleSize + " mTextWidth = " + mTextWidth);
     }
 
     @Override
@@ -76,8 +75,9 @@ public class CircleIndexView extends View {
         float radius = this.circleSize / 2;
         canvas.drawCircle(radius, radius, radius - mStrokeWidth, mPaint);
 
-        if (Math.abs(circleSize - mTextWidth) <= 2) {
-            mTextSize *= 0.85;
+        if (Math.abs(circleSize - mTextWidth) <= 2 * mStrokeWidth
+                || Math.abs(circleSize - mTextSize) <= 2 * mStrokeWidth) {
+            mTextSize *= 0.88;
         }
 
         mPaint.setStyle(Paint.Style.FILL);
@@ -107,5 +107,13 @@ public class CircleIndexView extends View {
         Paint pFont = new Paint();
         pFont.setTextSize(this.mTextSize);
         return pFont.measureText(str);
+    }
+
+    /**
+     * 计算允许的最大字体大小
+     */
+    private float calcMaxTextSize() {
+        double powSize = Math.abs(Math.pow(circleSize, 2) - Math.pow(mTextWidth / 2, 2));
+        return (float) Math.pow(powSize, 0.5);
     }
 }

@@ -83,6 +83,7 @@
             app:textSize="20sp"/>
 
         <org.lynxz.textrelated.widget.CircleIndexView
+            android:id="@+id/civ"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:foreColor="#00f"

@@ -18,7 +18,7 @@ webView的基础使用: js/java代码互调,返回键回退,页面适应手机�
 ### TextRelatedDemo
 项目过程中碰到的相关问题汇总<br>
 * 简单的图文混排实现(Html.fromHtml / span);
-* 自定义控件圆圈数字的实现(主要是text居中的实现);
+* 自定义控件圆圈文字的实现(主要是text居中的实现);
 
 ### SvgAnimationDemo
 介绍了三种线条动画的写法
