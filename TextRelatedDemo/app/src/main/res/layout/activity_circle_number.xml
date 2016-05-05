@@ -12,12 +12,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <org.lynxz.textrelated.widget.CircleNumberView
+        <org.lynxz.textrelated.widget.CircleIndexView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:index="9"/>
+            app:index="3"
+            app:textSize="20sp"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -33,12 +35,20 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <org.lynxz.textrelated.widget.CircleNumberView
+        <org.lynxz.textrelated.widget.CircleIndexView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:foreColor="@android:color/holo_blue_bright"
-            app:index="99"
-            app:textSize="20sp"/>
+            app:index="3"/>
+
+        <org.lynxz.textrelated.widget.CircleIndexView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:index="306"/>
+
+        <org.lynxz.textrelated.widget.CircleIndexView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:index="abc9"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,24 +65,24 @@
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
-        <org.lynxz.textrelated.widget.CircleNumberView
+        <org.lynxz.textrelated.widget.CircleIndexView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:index="A"/>
 
-        <org.lynxz.textrelated.widget.CircleNumberView
+        <org.lynxz.textrelated.widget.CircleIndexView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:index="a"/>
 
-        <org.lynxz.textrelated.widget.CircleNumberView
+        <org.lynxz.textrelated.widget.CircleIndexView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:foreColor="#f00"
             app:index="H"
             app:textSize="20sp"/>
 
-        <org.lynxz.textrelated.widget.CircleNumberView
+        <org.lynxz.textrelated.widget.CircleIndexView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:foreColor="#00f"
