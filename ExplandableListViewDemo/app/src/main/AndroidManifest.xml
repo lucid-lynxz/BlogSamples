@@ -24,6 +24,11 @@
             android:screenOrientation="portrait"/>
         <activity android:name=".AnimatedActivity">
         </activity>
+        <activity
+            android:name=".ThreeLevelActivity"
+            android:label="@string/title_activity_three_level"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
     </application>
 
 </manifest>
