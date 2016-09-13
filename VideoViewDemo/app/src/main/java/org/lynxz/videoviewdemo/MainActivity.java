@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity implements MediaPlayer.OnErrorLis
         mVv = (VideoView) findViewById(R.id.vv);
 
         // 播放本地文件
-        mVideoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.shuai_dan_ge);
+        mVideoUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.audio_recode);
         mVv.setVideoURI(mVideoUri);
 
         // 播放在线视频

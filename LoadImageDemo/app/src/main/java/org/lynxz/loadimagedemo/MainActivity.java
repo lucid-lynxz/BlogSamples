@@ -17,8 +17,10 @@ import com.bumptech.glide.request.target.SimpleTarget;
 
 public class MainActivity extends AppCompatActivity {
 
-//    private String imageUrl = "http://img5.imgtn.bdimg.com/it/u=2370968757,1012541204&fm=11&gp=0.jpg";
-        private String imageUrl = "http://v11.huayu.nd/s/p/3038/bddb446ca24240569dc3736f30d4f097/image/1.jpg/d736544a6ec0b44c8e8b6cecf6e04158";
+    //    private String imageUrl = "http://img5.imgtn.bdimg.com/it/u=2370968757,1012541204&fm=11&gp=0.jpg";
+    //        private String imageUrl = "http://v11.huayu.nd/s/p/3038/bddb446ca24240569dc3736f30d4f097/image/1.jpg/d736544a6ec0b44c8e8b6cecf6e04158";
+    //        private String imageUrl = "http://7sbxno.com2.z0.glb.clouddn.com/aa.jpg";
+    private String imageUrl = "http://7sbxno.com2.z0.glb.clouddn.com/bb.jpg";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +49,11 @@ public class MainActivity extends AppCompatActivity {
         Glide.with(this).load(imageUrl)
                 .asBitmap()
                 .fitCenter()
-                .into(new SimpleTarget<Bitmap>(1200, 3000) {
+                .into(new SimpleTarget<Bitmap>() {
                     @Override
                     public void onResourceReady(Bitmap resource, GlideAnimation glideAnimation) {
-                        iv.setImageBitmap(zoomImage(resource, getScreenSize().x, getScreenSize().y));
-//                                                iv.setImageBitmap(resource);
+                        //                        iv.setImageBitmap(zoomImage(resource, getScreenSize().x, getScreenSize().y));
+                        iv.setImageBitmap(resource);
                     }
                 });
     }
@@ -83,8 +85,9 @@ public class MainActivity extends AppCompatActivity {
         // 计算宽高缩放率
         float scaleWidth = ((float) newWidth) / width;
         float scaleHeight = ((float) newHeight) / height;
-        float scale = scaleWidth >= scaleHeight ? scaleHeight : scaleWidth;
+        float scale = scaleWidth;//scaleWidth >= scaleHeight ? scaleHeight : scaleWidth;
 
+        scale = scale >= 2 ? 2 : scale;
         // 缩放图片动作
         //        matrix.postScale(scaleWidth, scaleHeight);
         matrix.postScale(scale, scale);

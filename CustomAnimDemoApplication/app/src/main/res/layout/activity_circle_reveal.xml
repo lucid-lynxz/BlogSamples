@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/btn_entry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="跳转"/>
+
+    <Button
+        android:id="@+id/btn_circle_reveal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="动起来"/>
+
+    <Button
+        android:id="@+id/btn_circle_reveal_hide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="消失"/>
+
+    <ImageView
+        android:id="@+id/iv_reveal"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_centerInParent="true"
+        android:src="@drawable/iconfont_hx"
+        android:visibility="invisible"/>
+
+
+</LinearLayout>

@@ -11,6 +11,7 @@
 1. 基本使用,点击事件,懒加载图片等;
 2. 将展开的group标题栏位置浮动在顶部,取自 [这篇博客](http://blog.csdn.net/h7870181/article/details/40400155);
 3. [展开/收缩动画](https://github.com/idunnololz/AnimatedExpandableListView);
+4. 三级列表的写法:嵌套一个自定义的Expandable,重写onMeasure即可,不然会不显示;
 
 ### WebViewDemo
 webView的基础使用: js/java代码互调,返回键回退,页面适应手机屏幕,读取cookie,远端调试webView页面...

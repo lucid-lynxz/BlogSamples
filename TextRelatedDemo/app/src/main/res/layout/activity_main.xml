@@ -21,11 +21,26 @@
         android:text="图文混排(span)"
         android:textAllCaps="false"/>
 
+
+    <Button
+        android:id="@+id/btn_html_text_helper"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="图文混排-公司"
+        android:textAllCaps="false"/>
+
     <Button
         android:id="@+id/btn_circle_number"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="CircleNumber"
+        android:textAllCaps="false"/>
+
+    <Button
+        android:id="@+id/btn_img_align_center"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="图文首行居中"
         android:textAllCaps="false"/>
 
 </LinearLayout>
