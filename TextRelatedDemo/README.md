@@ -42,3 +42,8 @@ SpannableString spannableString = new SpannableString("face");
 spannableString.setSpan(imageSpan, 0, 4,
         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 ```
+## 3. 图片跟多行文本首行居中对齐显示
+
+
+# 文字序号指定控件
+![效果](https://raw.githubusercontent.com/lucid-lynxz/markdownPhotos/master/AndroidCustomWidget/CircleIndexDemo.png)
