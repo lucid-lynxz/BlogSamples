@@ -24,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
-            android:text="多行文本,左侧图像需要跟我首行居中对齐,使用自定义的CenterImageSpan来实现"
+            android:text="多行文本,左侧图像需要跟我首行居中对齐,使用a12345g#hello123456789098789001自定义的CenterImageSpan来实现"
             android:textSize="20sp"/>
 
     </LinearLayout>
