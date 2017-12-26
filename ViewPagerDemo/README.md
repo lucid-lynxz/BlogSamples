@@ -8,7 +8,16 @@
 安装运行后,允许申请的权限,然后切换到手机设置页面,禁止任一权限,通过最近程序列表进入应用,查看日志,会发现fragment的hashCode()值不一致
 类似:
 ```shell
-D/permissionTest: afterCreate(PermissionDemoActivity.kt:45) 232348461 -- 18987106  // 在Activity中通过 new FragmentXXX() 的方式生成的对象hashCode()
-D/permissionTest: onViewCreated(BaseFragment.kt:25) FragmentOne 40302766 // 在 fragment 的 onViewCreated() 生命周期内打印的当前对象hahsCode()
-D/permissionTest: onViewCreated(BaseFragment.kt:25) FragmentTwo 106045384
+// 正常运行
+D/permissionTest: afterCreate(PermissionDemoActivity.kt:58) 64481327 -- 252075580 // 在Activity中通过 new FragmentXXX() 的方式生成的对象hashCode()
+D/permissionTest: onAttach(BaseFragment.kt:22) FragmentOne 64481327 // 在 fragment 的生命周期内打印的当前对象hahsCode()
+D/permissionTest: onCreate(BaseFragment.kt:27) FragmentOne 64481327
+D/permissionTest: onViewCreated(BaseFragment.kt:41) FragmentOne 64481327
+D/permissionTest: onActivityCreated(BaseFragment.kt:36) FragmentOne 64481327
+
+// 保持程序运行,切换到手机设置界面,关闭权限后,通过最近程序列表进入app
+// 发现fragment的生命周期 onAttach() onCreate() 没有被触发,hashCode()值也不通
+D/permissionTest: afterCreate(PermissionDemoActivity.kt:58) 18987106 -- 257265139
+D/permissionTest: onViewCreated(BaseFragment.kt:41) FragmentOne 92290738 
+D/permissionTest: onActivityCreated(BaseFragment.kt:36) FragmentOne 92290738
 ```

@@ -1,9 +1,9 @@
 package org.lynxz.viewpagerdemo.activity
 
-import android.support.v4.app.FragmentStatePagerAdapter
 import kotlinx.android.synthetic.main.activity_permission_demo.*
 import org.lynxz.viewpagerdemo.Logger
 import org.lynxz.viewpagerdemo.R
+import org.lynxz.viewpagerdemo.adapter.MyFragmentStatePagerAdapter
 import org.lynxz.viewpagerdemo.base.BaseActivity
 import org.lynxz.viewpagerdemo.base.BaseFragment
 import org.lynxz.viewpagerdemo.config.LogTag
@@ -33,7 +33,7 @@ class PermissionDemoActivity : BaseActivity() {
 
     override fun initView() {
         vp_permission.apply {
-            adapter = object : FragmentStatePagerAdapter(supportFragmentManager) {
+            adapter = object : MyFragmentStatePagerAdapter(supportFragmentManager) {
                 override fun getItem(position: Int) = fragList[position]
                 override fun getCount() = fragList.size
             }
@@ -44,4 +44,10 @@ class PermissionDemoActivity : BaseActivity() {
     override fun afterCreate() {
         Logger.d("${fragOne.hashCode()} -- ${fragTwo.hashCode()}")
     }
+
+    override fun onResume() {
+        super.onResume()
+        Logger.d("${fragOne.hashCode()} ${fragOne.isAdded}")
+    }
+
 }
