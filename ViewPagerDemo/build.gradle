@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        kotlin_version = '1.1.60'
+        kotlin_version = '1.2.10'
         rxpermission_version = '0.9.4@aar'
         rxjava_version = '2.1.1'
         rxkotlin_version = '2.1.0'

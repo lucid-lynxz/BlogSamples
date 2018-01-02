@@ -18,7 +18,7 @@ abstract class BaseFragment : Fragment() {
 
     override fun onAttach(context: Context?) {
         super.onAttach(context)
-        Logger.d("${javaClass.simpleName} ${hashCode()}")
+        Logger.d("${javaClass.simpleName} ${hashCode()} ")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

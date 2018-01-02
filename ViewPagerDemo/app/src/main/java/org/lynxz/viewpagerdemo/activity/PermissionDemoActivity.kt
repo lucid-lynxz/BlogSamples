@@ -18,6 +18,9 @@ class PermissionDemoActivity : BaseActivity() {
     lateinit var fragOne: FragmentOne
     lateinit var fragTwo: FragmentTwo
     var fragList = ArrayList<BaseFragment>()
+    val mAdapter by lazy {
+        MyFragmentStatePagerAdapter(supportFragmentManager, fragList)
+    }
 
     override fun getLayoutRes() = R.layout.activity_permission_demo
 
@@ -31,12 +34,15 @@ class PermissionDemoActivity : BaseActivity() {
         }
     }
 
+//    override fun onRetainCustomNonConfigurationInstance(): Any {
+//        Logger.d("onRetainCustomNonConfigurationInstance...")
+//        return super.onRetainCustomNonConfigurationInstance()
+//    }
+
     override fun initView() {
+
         vp_permission.apply {
-            adapter = object : MyFragmentStatePagerAdapter(supportFragmentManager) {
-                override fun getItem(position: Int) = fragList[position]
-                override fun getCount() = fragList.size
-            }
+            adapter = mAdapter
             offscreenPageLimit = 1
         }
     }
@@ -47,7 +53,7 @@ class PermissionDemoActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        Logger.d("${fragOne.hashCode()} ${fragOne.isAdded}")
+        Logger.d("${fragOne.hashCode()} ${fragOne.isAdded} V.S. ${mAdapter.getItem(0).hashCode()} ${mAdapter.getItem(0).isAdded}")
     }
 
 }
