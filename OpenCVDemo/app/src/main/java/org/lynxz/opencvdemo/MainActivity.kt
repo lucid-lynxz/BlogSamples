@@ -1,12 +1,14 @@
 package org.lynxz.opencvdemo
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
+import org.lynxz.opencvdemo.facedetect.FdActivity
 import org.opencv.core.Core
-import org.opencv.core.CvType
-import org.opencv.core.Mat
-import org.opencv.core.Scalar
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,14 +16,25 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        val start = System.currentTimeMillis()
         iv_opencv.setImageBitmap(ImageProcessUtils.blur(this, R.mipmap.honglian))
+        iv_opencv.setOnClickListener {
+            if (Build.VERSION.SDK_INT >= 23) {
+                if (checkSelfPermission(android.Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                    startActivity(Intent(this, FdActivity::class.java))
+                } else {
+                    requestPermissions(arrayOf(Manifest.permission.CAMERA), 100)
+                }
+            }
+        }
 
-        showToast("OpenCV ${Core.VERSION}")
+        Logger.d("OpenCV ${Core.VERSION} 耗时: ${System.currentTimeMillis() - start} 毫秒")
+    }
 
-        // rows -> height, cols -> width 生成一个代表10*5像素图像的矩阵
-        val m = Mat(5, 10, CvType.CV_8UC1, Scalar(0.0))
-
-
-//        val imread = Imgcodecs.imread("")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == 100 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            startActivity(Intent(this, FdActivity::class.java))
+        }
     }
 }

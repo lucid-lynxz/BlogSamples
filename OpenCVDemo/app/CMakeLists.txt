@@ -9,7 +9,8 @@ cmake_minimum_required(VERSION 3.4.1)
 add_library(
              image_process
              SHARED
-             src/main/cpp/image_process.cpp )
+             src/main/cpp/image_process.cpp
+             src/main/cpp/DetectionBasedTracker_jni.cpp )
 
 # 增加opencv库
 add_library( opencv_java3 SHARED IMPORTED )
