@@ -15,14 +15,14 @@ add_library(
 # 增加opencv库
 add_library( opencv_java3 SHARED IMPORTED )
 # 编译的平台是armeabi
-if(${ANDROID_ABI} STREQUAL "armeabi")
+if(${ANDROID_ABI} STREQUAL "x86")
 # 设置动态库文件的路径属性
 set_target_properties(
     opencv_java3
     PROPERTIES IMPORTED_LOCATION
-    ${CMAKE_SOURCE_DIR}/src/main/jniLibs/armeabi/libopencv_java3.so
+    ${CMAKE_SOURCE_DIR}/src/main/jniLibs/x86/libopencv_java3.so
     )
-endif(${ANDROID_ABI} STREQUAL "armeabi")
+endif(${ANDROID_ABI} STREQUAL "")
 # opencv库的头文件路径设置，在此是opencv-sdk的路径，当然你也可以把include目录拷贝到工程中
 include_directories(
     /Users/lynxz/Applications/OpenCV-android-sdk-3.4.0/sdk/native/jni/include

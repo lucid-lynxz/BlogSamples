@@ -6,4 +6,5 @@
 2. 创建基本的 `Android Studio` (以下简称 `AS`) 项目;
 3. 通过 `AS` 的 `file - new - import module` 菜单导入 `openCvSdkHome/sdk/java` 目录,得到模块 `openCVLibrary340`;
 4. 修改 `openCVLibrary340/build.gradle` 中的相关参数(如 `compileSdkVersion`), 保持与 `app` 模块中的设定一致;
-5. 
+5. 修改 `app/build.gradle` 添加 opencv模块依赖: `compile project(":openCVLibrary340")`
+6. `build - rebuild project`

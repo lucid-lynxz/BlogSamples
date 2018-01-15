@@ -91,26 +91,26 @@ object Logger {
      * */
     @JvmOverloads
     @JvmStatic
-    fun json(json: String, tag: String = TAG) {
-        var json = json
+    fun json(jsonstr: String, tag: String = TAG) {
+        var jsonInfo = jsonstr
 
-        if (json.isBlank()) {
-            d("Empty/Null json content", tag)
+        if (jsonInfo.isBlank()) {
+            d("Empty/Null jsonInfo content", tag)
             return
         }
 
         try {
-            json = json.trim { it <= ' ' }
-            if (json.startsWith("{")) {
-                val jsonObject = JSONObject(json)
+            jsonInfo = jsonInfo.trim { it <= ' ' }
+            if (jsonInfo.startsWith("{")) {
+                val jsonObject = JSONObject(jsonInfo)
                 var message = jsonObject.toString(JSON_INDENT)
                 message = message.replace("\n".toRegex(), "\n║ ")
                 val s = getMethodNames()
                 println(String.format(s, message))
                 return
             }
-            if (json.startsWith("[")) {
-                val jsonArray = JSONArray(json)
+            if (jsonInfo.startsWith("[")) {
+                val jsonArray = JSONArray(jsonInfo)
                 var message = jsonArray.toString(JSON_INDENT)
                 message = message.replace("\n".toRegex(), "\n║ ")
                 val s = getMethodNames()
