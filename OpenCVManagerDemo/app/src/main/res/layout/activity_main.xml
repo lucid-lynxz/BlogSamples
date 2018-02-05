@@ -17,6 +17,16 @@
             android:id="@+id/btn_blur"
             style="@style/common_btn"
             android:text="blur"/>
+
+        <Button
+            android:id="@+id/btn_gaussian_blur"
+            style="@style/common_btn"
+            android:text="gaussian_blur"/>
+
+        <Button
+            android:id="@+id/btn_medium_blur"
+            style="@style/common_btn"
+            android:text="medium_blur"/>
     </org.lynxz.opencvmanagerdemo.FlowLayout>
 
     <ImageView
