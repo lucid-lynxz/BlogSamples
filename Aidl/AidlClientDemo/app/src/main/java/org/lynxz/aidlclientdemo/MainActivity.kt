@@ -46,6 +46,15 @@ class MainActivity : AppCompatActivity() {
             // 获取该对象后即可进行通讯
             Log.d("clientAidl", "onServiceConnected $name")
             demandManager = IDemandManager.Stub.asInterface(service)
+            // binder死亡代理
+            service?.linkToDeath(object : IBinder.DeathRecipient {
+                override fun binderDied() {
+                    demandManager?.asBinder()?.unlinkToDeath(this,0)
+                    demandManager = null
+                    // todo 重新绑定service
+                }
+
+            },0)
             demandManager?.registerListener(listener)
         }
     }
