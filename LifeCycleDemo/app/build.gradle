@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply from: "../config/sign.gradle"
 
@@ -35,6 +36,6 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.constraintLayout)
 
-    implementation(libs.lifeCycleExtension)
-    implementation(libs.lifeCycleCompiler)
+//    implementation(libs.lifeCycleExtension)
+//    kapt(libs.lifeCycleCompiler)
 }
