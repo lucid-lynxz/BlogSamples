@@ -1,3 +1,5 @@
+package org.lynxz.lifecycledemo
+
 sealed class BooleanExt<out T> constructor(val boolean: Boolean)
 
 object Otherwise : BooleanExt<Nothing>(true)

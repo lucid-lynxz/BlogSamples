@@ -1,3 +1,4 @@
+package org.lynxz.lifecycledemo
 
 import android.app.Activity
 import android.content.Context
@@ -14,7 +15,6 @@ import android.view.ViewGroup
 import android.view.ViewOutlineProvider
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import org.lynxz.lifecycledemo.BuildConfig
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 

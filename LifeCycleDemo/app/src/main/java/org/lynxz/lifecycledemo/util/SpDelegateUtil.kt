@@ -1,3 +1,4 @@
+package org.lynxz.lifecycledemo.util
 
 import android.content.Context
 import kotlin.properties.ReadWriteProperty

@@ -8,3 +8,6 @@ build/
 .externalNativeBuild
 #*.jks
 app/libs/
+.project
+.classpath
+.settings

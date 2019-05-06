@@ -1,7 +1,7 @@
 package org.lynxz.lifecycledemo
 
-import Logger
 import android.app.Application
+import org.lynxz.lifecycledemo.util.Logger
 
 /**
  * Created by lynxz on 2019/3/2

@@ -2,7 +2,6 @@ package org.lynxz.lifecycledemo.observer
 
 import android.arch.lifecycle.Lifecycle
 import android.arch.lifecycle.LifecycleObserver
-import android.arch.lifecycle.LifecycleOwner
 import android.arch.lifecycle.OnLifecycleEvent
 import org.lynxz.lifecycledemo.util.Logger
 
@@ -12,38 +11,38 @@ import org.lynxz.lifecycledemo.util.Logger
  *
  * Description:
  */
-open class MainActObserver : LifecycleObserver {
+class SecondActObserver : LifecycleObserver {
 //    override fun onStateChanged(source: LifecycleOwner?, event: Lifecycle.Event?) {
 //        Logger.d("MainActObserver onStateChanged $event")
 //    }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate() {
-        Logger.d("MainActObserver onCreate")
+        Logger.d("SecondActObserver $this onCreate")
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    fun onStart(owner: LifecycleOwner?) {
-        Logger.d("MainActObserver onStart owner is: $owner")
+    fun onStart() {
+        Logger.d("SecondActObserver onStart")
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
     fun onResume() {
-        Logger.d("MainActObserver onResume")
+        Logger.d("SecondActObserver onResume")
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    open fun onPause() {
-        Logger.d("MainActObserver onPause")
+    fun onPause() {
+        Logger.d("SecondActObserver onPause")
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     fun onStop() {
-        Logger.d("MainActObserver onStop")
+        Logger.d("SecondActObserver onStop")
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
     fun onDestroy() {
-        Logger.d("MainActObserver onDestroy")
+        Logger.d("SecondActObserver onDestroy")
     }
 }
