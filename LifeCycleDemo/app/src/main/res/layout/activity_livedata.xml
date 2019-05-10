@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/ll_container"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+
+    <org.lynxz.lifecycledemo.ui.widget.FlowLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        <Button
+                android:id="@+id/btn_add_frag"
+                style="@style/CommonBtn"
+                android:text="添加fragment"/>
+
+        <Button
+                android:id="@+id/btn_remove_frag"
+                style="@style/CommonBtn"
+                android:enabled="false"
+                android:text="移除fragment"/>
+
+        <Button
+                android:id="@+id/btn_get_info"
+                style="@style/CommonBtn"
+                android:text="showIsnfo"/>
+
+        <EditText
+                android:id="@+id/edt_msg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="输入新消息"/>
+
+        <Button
+                android:id="@+id/btn_update_msg"
+                style="@style/CommonBtn"
+                android:text="更新消息"/>
+
+        <Button
+                android:id="@+id/btn_update_msg_in_thread"
+                style="@style/CommonBtn"
+                android:text="更新消息(子线程)"/>
+        <Button
+                android:id="@+id/btn_update_msg_twice"
+                style="@style/CommonBtn"
+                android:text="依次调用 postValue 和 setValue"/>
+
+        <TextView
+                android:id="@+id/tv_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+    </org.lynxz.lifecycledemo.ui.widget.FlowLayout>
+
+</LinearLayout>

@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.SecondActivity"/>
+        <activity android:name=".ui.LiveDataTestActivity"/>
     </application>
 
 </manifest>

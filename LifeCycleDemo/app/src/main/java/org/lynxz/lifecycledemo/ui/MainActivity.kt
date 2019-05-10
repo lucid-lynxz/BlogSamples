@@ -18,5 +18,7 @@ class MainActivity : AppCompatActivity() {
 //        lifecycle.addObserver(MainActObserverSub())
 
         btn_second.setOnClickListener { startActivity(Intent(this@MainActivity, SecondActivity::class.java)) }
+
+        btn_live_data.setOnClickListener { startActivity(Intent(this@MainActivity, LiveDataTestActivity::class.java)) }
     }
 }
