@@ -1,15 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-kapt'
 apply plugin: 'kotlin-android-extensions'
 apply from: "../config/sign.gradle"
 
 android {
-    compileSdkVersion androidCompileSdkVersion
+    compileSdkVersion 28
     defaultConfig {
-        applicationId "org.lynxz.lifecycledemo"
+        applicationId "org.lynxz.locationdemo"
         minSdkVersion 21
-        targetSdkVersion androidTargetSdkVersion
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -19,8 +18,8 @@ android {
             signingConfig signingConfigs.release
         }
         release {
-            signingConfig signingConfigs.release
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -29,13 +28,12 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     testImplementation(test.junit)
-    testImplementation(test.espresso)
-    testImplementation(test.supportTestRunner)
+    androidTestImplementation(test.espresso)
+    androidTestImplementation(test.supportTestRunner)
 
-    implementation(libs.kotlinLib)
     implementation(libs.appcompat)
+    implementation(libs.supportV4)
     implementation(libs.constraintLayout)
 
-    implementation(libs.lifeCycleExtension)
-//    kapt(libs.lifeCycleCompiler)
+    implementation(libs.kotlinLib)
 }

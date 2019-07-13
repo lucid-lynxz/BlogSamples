@@ -1,0 +1,131 @@
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+/**
+ * v1.0 2019.4.4
+ * 在需要进行发布的 library/build.gradle 中添加本gradle插件
+ * apply from: 'maven_push.gradle'
+ * 发布时,运行 gradle -> upload -> uploadArchives task即可;
+ * */
+ext {
+    // 按项目需要更新如下参数值
+    // 是否是发布模式, 若true,则混淆并隐藏部分方法,与仓库地址无关
+    isReleaseMode = is_release_mode.toBoolean()
+
+    // 发布到仓库中的 sdk 相关版本信息
+    sdkArtifactId = ARTIFACT_ID_MULTI
+    sdkVersionName = generateSdkVersionName(VERSION_NAME_MULTI)
+    sdkVersionCode = OIFI_SDK_VERSION_CODE_MULTI.toInteger()
+
+    // release版仓库,对外发布时使用
+    repositoryRelease = RELEASE_URL
+    // snapshot仓库,用于内部开发时使用
+    repositorySnapshot = SNAPSHOT_URL
+
+    // 仓库对应的账号密码
+    publishUserName = isReleaseBuild4External() ? NAME_RELEASE : NAME_SNAPSHOT
+    publishPassword = isReleaseBuild4External() ? PASSWORD_RELEASE : PASSWORD_SNAPSHOT
+
+    // 要打包的 buildTypes 类型,同时修改要生成 aar 的 library/build.gradle
+    /*
+    android {
+        defaultConfig {
+            defaultPublishConfig targetPublishConfig
+            publishNonDefault false
+        }
+    }
+     */
+    targetPublishConfig = isReleaseMode ? 'release' : 'debug'
+}
+
+/**
+ * 按需自动添加 `_debug` 字样到 sdk 版本名称中
+ * */
+def generateSdkVersionName(String originName) {
+    if (isReleaseMode) {
+        return originName.replace("_debug", "")
+    } else {
+        if (originName.contains("_debug")) {
+            return originName
+        } else {
+            return originName.replace("-SNAPSHOT", "_debug-SNAPSHOT");
+        }
+    }
+}
+
+println("mvnPush参数:$sdkArtifactId  $sdkVersionName ${project.ext.sdkVersionName}")
+
+configurations {
+    deployerJars
+}
+
+repositories {
+    mavenCentral()
+}
+
+// 判断版本是 Release or Snapshots
+// 若不包含snapshot则表示发布给第三方集成
+def isReleaseBuild4External() {
+    return !sdkVersionName.toLowerCase().contains("snapshot")
+}
+
+// 获取仓库url
+def getRepositoryUrl() {
+    return isReleaseBuild4External() ? repositoryRelease : repositorySnapshot
+}
+
+// 数字签名配置
+signing {
+    // 当 发布版本 & 存在"uploadArchives"任务时，才执行
+    required { isReleaseBuild4External() && gradle.taskGraph.hasTask("uploadArchives") }
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment {
+                MavenDeployment deployment -> signing.signPom(deployment)
+            }
+
+            pom.version = sdkVersionName
+            pom.artifactId = sdkArtifactId
+            pom.groupId = GROUP_ID
+
+            repository(url: getRepositoryUrl()) {
+                authentication(userName: publishUserName, password: publishPassword) // maven授权信息
+            }
+        }
+    }
+}
+
+/**
+ *  若有需要生成注释, 方便使用aar时(不能混淆)查看,则请将下方代码copy到 `library/build.gradle` 中 
+ *  然后在 `uploadArchives` 之前,先运行 `javadocJar` 和 `sourcesJar` 两个 task
+ *  `uploadArchives` 后, maven仓库中就会同时存在 aar, javadoc.jar , source.jar
+ *  集成时就能看到文档注释了
+ *  不过此种方式局限性较大, 可单独通过 AS -> tools -> Generate javaDoc 来生成文档(选中某个java文件后,再单击该命令,则可以只生成本类的文档)
+ */
+////build a jar with javadoc
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    classifier = 'javadoc'
+//    from javadoc.destinationDir
+//}
+//
+//tasks.withType(Javadoc) {
+//    options.addStringOption('Xdoclint:none', '-quiet')
+//    options.addStringOption('encoding', 'UTF-8')
+//    options.addStringOption('charSet', 'UTF-8')
+//}
+//
+//// build a jar with source files
+//task sourcesJar(type: Jar) {
+//    from android.sourceSets.main.java.srcDirs
+//    classifier = 'sources'
+//    // include("**/ICatapush.java")
+//}
+//
+//artifacts {
+//    archives javadocJar
+//    archives sourcesJar
+//}
